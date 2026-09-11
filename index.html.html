@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛍️ Black Friday Chaos — Escape Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#B8860B;--teal2:#E0B94D;--tl:#FBF3DE;
+  --coral:#D62839;--coral2:#F2665A;--cl:#FDE8E6;
+  --amber:#7C8595;--amber2:#C7CDD6;--am:#F1F2F4;
+  --red:#B71C1C;--green:#2E7D32;
+  --ink:#24262B;
+  --bg:linear-gradient(135deg,#F6F6F3 0%,#FFF8E8 55%,#F1F1EE 100%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);min-height:100vh;background-attachment:fixed;color:var(--ink)}
+h1,h2,h3,.pop{font-family:'Poppins',sans-serif}
+.page{max-width:800px;margin:0 auto;padding:16px 18px 40px}
+.card{background:#fff;border-radius:18px;box-shadow:0 4px 22px rgba(36,38,43,.10);padding:24px;margin-bottom:14px}
+.card-teal{border-top:4px solid var(--teal)}
+.card-coral{border-top:4px solid var(--coral)}
+.card-amber{border-top:4px solid var(--amber)}
+/* ── Glass pane pattern (shop-window grid) ── */
+.glass{position:relative;overflow:hidden}
+.glass::before{content:'';position:absolute;inset:0;opacity:.14;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,#fff 0 2px,transparent 2px 42px),repeating-linear-gradient(90deg,#fff 0 2px,transparent 2px 42px);}
+/* ── Buttons ── */
+.btn{border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;border-radius:50px;padding:10px 22px;font-size:.88rem;display:inline-flex;align-items:center;gap:6px;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:scale(.96)!important}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn-teal{background:var(--teal);color:#fff;box-shadow:0 3px 0 #8B6914}
+.btn-teal:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 0 #8B6914}
+.btn-coral{background:var(--coral);color:#fff;box-shadow:0 3px 0 #8E1B24}
+.btn-coral:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 0 #8E1B24}
+.btn-amber{background:var(--amber);color:#fff;box-shadow:0 3px 0 #4F5866}
+.btn-amber:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 0 #4F5866}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 3px 0 #7A1414}
+.btn-red:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 0 #7A1414}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 3px 0 #1B5E20}
+.btn-green:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 0 #1B5E20}
+.btn-gray{background:#E4E4E4;color:#555}
+.btn-gray:hover:not(:disabled){background:#D3D3D3}
+.btn-outline{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+.btn-outline:hover:not(:disabled){background:var(--tl)}
+.lg{font-size:1rem;padding:13px 30px}
+.sm{font-size:.78rem;padding:6px 14px}
+.full{width:100%;justify-content:center}
+/* ── Header ── */
+.hdr{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:2px solid #ECE3CE;padding:10px 0;position:sticky;top:0;z-index:30;box-shadow:0 2px 10px rgba(36,38,43,.10)}
+.hdr-in{max-width:800px;margin:0 auto;padding:0 18px;display:flex;align-items:center;gap:12px}
+/* ── Progress ── */
+.prg{display:flex;align-items:center;flex:1}
+.prg-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.92rem;font-weight:800;transition:all .3s;flex-shrink:0}
+.prg-done{background:var(--teal);color:#fff;box-shadow:0 0 0 3px #EFDCA8}
+.prg-active{background:var(--coral);color:#fff;box-shadow:0 0 0 3px #FAC7CB;animation:pls .8s ease-in-out infinite}
+.prg-future{background:#EDEDED;color:#BBB}
+.prg-line{flex:1;height:3px;margin:0 2px;transition:background .3s}
+.prg-lbl{font-size:.5rem;font-weight:700;color:#AAA;text-align:center;margin-top:2px;max-width:48px;line-height:1.15}
+/* ── Score pill ── */
+.sc-pill{background:linear-gradient(135deg,var(--teal),var(--coral));color:#fff;padding:5px 15px;border-radius:50px;font-weight:800;font-size:.88rem;white-space:nowrap;box-shadow:0 3px 10px rgba(184,134,11,.25)}
+.score-fab{position:fixed;top:12px;right:14px;z-index:45;background:linear-gradient(135deg,var(--teal),var(--coral));color:#fff;padding:7px 17px;border-radius:50px;font-weight:800;font-size:.9rem;box-shadow:0 3px 12px rgba(184,134,11,.35);white-space:nowrap}
+/* ── Persistent teacher button ── */
+.prof-fab{position:fixed;bottom:16px;right:16px;z-index:40}
+.rep-fab{position:fixed;bottom:16px;left:16px;z-index:40}
+/* ── Inputs ── */
+input,textarea{font-family:'Inter',sans-serif;border:2px solid #E0E0E0;border-radius:11px;padding:10px 13px;font-size:.9rem;width:100%;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(184,134,11,.12)}
+textarea{resize:vertical;font-family:'Inter',sans-serif;line-height:1.6}
+/* ── QCM ── */
+.opt{display:flex;align-items:center;gap:9px;padding:11px 14px;border:2px solid #E8E8E8;border-radius:12px;margin-bottom:8px;cursor:pointer;font-weight:600;font-size:.88rem;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--teal2);background:var(--tl)}
+.opt.sel{border-color:var(--teal);background:#FCF6E5}
+.opt.right{border-color:var(--green);background:#EDF7EE}
+.opt.wrong{border-color:var(--red);background:#FFEBEE}
+.let{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;transition:all .15s}
+/* ── V/F ── */
+.vfr{display:flex;align-items:center;gap:8px;padding:9px 12px;border:2px solid #E8E8E8;border-radius:12px;margin-bottom:7px;transition:all .15s;flex-wrap:wrap}
+.tvf{padding:5px 13px;border-radius:50px;border:2px solid;cursor:pointer;font-weight:700;font-size:.79rem;transition:all .15s;font-family:'Inter',sans-serif}
+/* ── Matching ── */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mi{padding:9px 12px;border:2px solid #E8E8E8;border-radius:11px;cursor:pointer;font-weight:600;font-size:.83rem;min-height:50px;display:flex;align-items:center;transition:all .15s;line-height:1.35}
+.mi:hover:not(.mu):not(.mok):not(.mko){border-color:var(--coral);background:var(--cl)}
+.mi.msel{border-color:var(--coral);background:#FDE1E1;box-shadow:0 0 0 3px rgba(214,40,57,.18)}
+.mi.mu{opacity:.4;cursor:default;border-style:dashed}
+.mi.mok{border-color:var(--green);background:#EDF7EE;opacity:1;cursor:default}
+.mi.mko{border-color:var(--red);background:#FFEBEE;opacity:1;cursor:default}
+/* ── Situation card ── */
+.sit{background:linear-gradient(135deg,var(--tl),var(--cl));border:2px solid var(--teal);border-radius:16px;padding:18px}
+.slbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--teal);margin-bottom:2px}
+.sval{font-weight:600;font-size:.9rem;margin-bottom:12px;line-height:1.5}
+.hint{background:var(--am);border:2px dashed var(--amber);border-radius:11px;padding:9px 13px;font-size:.83rem;font-weight:700;color:#3F4750}
+/* ── Reading ── */
+.rtxt{background:#FBFAF7;border-left:4px solid var(--teal2);padding:15px;border-radius:0 12px 12px 0;font-size:.87rem;line-height:1.8;margin-bottom:14px;color:#333}
+/* ── Stars ── */
+.stars{font-size:1.5rem;letter-spacing:2px;color:var(--teal)}
+/* ── Indice box ── */
+.ibx{background:linear-gradient(135deg,var(--teal),var(--coral));border-radius:20px;padding:26px;text-align:center}
+.iwd{font-family:'Poppins',sans-serif;font-size:2.5rem;font-weight:900;color:#fff;letter-spacing:.06em;text-shadow:0 3px 0 rgba(0,0,0,.15)}
+/* ── Banners ── */
+.ok{background:#EDF7EE;border:2px solid var(--green);border-radius:12px;padding:11px;font-weight:700;color:#1B5E20;font-size:.88rem}
+.ko{background:#F4F1EA;border:2px solid var(--amber);border-radius:12px;padding:11px;font-weight:700;color:#3F4750;font-size:.88rem}
+.err{background:#FFEBEE;border:2px solid var(--red);border-radius:12px;padding:11px;font-weight:700;color:#7F0000;font-size:.88rem}
+/* ── Achievement overlay ── */
+.achv{background:linear-gradient(135deg,var(--teal),#966F0B);border-radius:16px;padding:16px 20px;text-align:center;margin-bottom:12px}
+/* ── Animations ── */
+@keyframes fadein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pls{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.fadein{animation:fadein .32s ease-out}
+.chip{background:linear-gradient(135deg,var(--teal),var(--coral));color:#fff;padding:3px 11px;border-radius:50px;font-weight:700;font-size:.78rem;display:inline-block;margin:2px}
+@media(max-width:580px){.mg{grid-template-columns:1fr}.card{padding:17px}.iwd{font-size:1.7rem}.lg{font-size:.93rem;padding:11px 22px}}
+@media print{.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ═══════════════════════════ GAME DATA ═══════════════════════════ */
+const WW=['THIS','STORE','SURVIVED','BLACK','FRIDAY','CHAOS'];
+
+/* Mission 1 — Store Floor vocabulary bank (30 items) */
+const POOL1=[
+ {w:'Cashier',d:'A person who handles payments at the till'},
+ {w:'Cash register',d:'The machine used to record sales and payments'},
+ {w:'Receipt',d:'A printed proof of purchase given to the customer'},
+ {w:'Discount',d:'A reduction in the usual price of a product'},
+ {w:'Customer',d:'A person who buys goods or services'},
+ {w:'Refund',d:'Money given back to a customer who returns an item'},
+ {w:'Stock',d:'The goods available for sale in a shop'},
+ {w:'Shelf',d:'A flat surface used to display products'},
+ {w:'Price tag',d:'A label showing the price of an item'},
+ {w:'Sale',d:'A period when goods are sold at reduced prices'},
+ {w:'Queue',d:'A line of people waiting to be served'},
+ {w:'Barcode',d:'A pattern of lines scanned to identify a product'},
+ {w:'Loyalty card',d:'A card that rewards regular customers with points or discounts'},
+ {w:'Special offer',d:'A promotional deal on a product'},
+ {w:'Shopping trolley',d:'A wheeled basket used to carry shopping'},
+ {w:'Changing room',d:'A place where customers try on clothes'},
+ {w:'Warranty',d:'A written guarantee covering repairs or replacement'},
+ {w:'Delivery',d:"The transport of goods to a customer's address"},
+ {w:'Out of stock',d:'No longer available for purchase'},
+ {w:'Bestseller',d:'A product that sells in very large numbers'},
+ {w:'Customer service',d:'Help and advice given to shoppers'},
+ {w:'Complaint',d:'An expression of dissatisfaction from a customer'},
+ {w:'Voucher',d:'A ticket that can be exchanged for a discount or product'},
+ {w:'Return policy',d:'The rules explaining how goods can be brought back'},
+ {w:'Invoice',d:'A document listing goods sold and their price'},
+ {w:'Retailer',d:'A business that sells goods directly to the public'},
+ {w:'Merchandise',d:'Goods that are bought and sold'},
+ {w:'Bargain',d:'A product sold at a very good price'},
+ {w:'Promotion',d:'A special campaign used to increase sales'},
+ {w:'Shopper',d:'A person who is buying goods in a shop'}
+];
+
+/* Mission 4 — Supplier Call vocabulary bank (30 items) */
+const POOL4=[
+ {w:'Supplier',d:'A company that provides goods to a business'},
+ {w:'Order',d:'A request to buy a specific quantity of goods'},
+ {w:'Delivery note',d:'A document listing the goods included in a shipment'},
+ {w:'Wholesaler',d:'A business that sells goods in large quantities to retailers'},
+ {w:'Shipment',d:'A quantity of goods sent together'},
+ {w:'Backorder',d:'An order that cannot be filled immediately because of low stock'},
+ {w:'Lead time',d:'The time between placing an order and receiving it'},
+ {w:'Negotiation',d:'Discussion aimed at reaching an agreement on price or terms'},
+ {w:'Contract',d:'A legal agreement between a business and a supplier'},
+ {w:'Quotation',d:'A statement of the price a supplier will charge'},
+ {w:'Bulk order',d:'A large quantity order, often at a reduced price'},
+ {w:'Distributor',d:'A company that supplies goods to retailers on behalf of a manufacturer'},
+ {w:'Logistics',d:'The organisation of the movement of goods'},
+ {w:'Freight',d:'Goods transported by lorry, ship or plane'},
+ {w:'Customs',d:'The official process of checking imported goods'},
+ {w:'Import',d:'Goods brought into a country to be sold'},
+ {w:'Export',d:'Goods sent out of a country to be sold'},
+ {w:'Terms and conditions',d:'The rules that apply to a business agreement'},
+ {w:'Payment terms',d:'The agreed period allowed for paying an invoice'},
+ {w:'Late delivery',d:'An order arriving after the agreed date'},
+ {w:'Quality control',d:'The process of checking that goods meet required standards'},
+ {w:'Damaged goods',d:'Products that have been harmed during transport or storage'},
+ {w:'Restocking',d:'The process of ordering new goods to replace sold stock'},
+ {w:'Inventory',d:'The full list of goods held in stock'},
+ {w:'Procurement',d:'The process of obtaining goods or services for a business'},
+ {w:'Manufacturer',d:'A company that makes goods to be sold'},
+ {w:'Purchase order',d:'A document confirming an order sent to a supplier'},
+ {w:'Return to sender',d:'Sending goods back to the supplier'},
+ {w:'Account manager',d:"A person responsible for managing a business relationship with a client"},
+ {w:'Reliability',d:'The quality of a supplier who consistently delivers on time'}
+];
+
+/* Mission 2 — Stock Room Crisis: 3 reading sets (text + True/False, français) */
+const M2SETS=[
+ {title:'The Empty Shelves',
+  text:`It was 6:45 a.m. on Black Friday morning, and Sophie was already at the store, an hour before opening. She was checking the electronics aisle when she noticed that half the shelves for the advertised flat-screen televisions were completely empty. The delivery from the central warehouse, expected the day before, had not arrived.
+
+She quickly called the stockroom manager, Karim, who checked the system and found that the delivery van had broken down on the motorway. Sophie decided to put up temporary signs explaining the delay and offered customers a rain check, promising the same discounted price once the stock arrived.
+
+By 9 a.m., a smaller delivery van arrived with half the missing stock. Sophie restocked the shelves quickly before the doors opened, and only a few customers complained about the reduced selection.`,
+  vf:[
+   {s:'Sophie est arrivée au magasin après son ouverture.',a:false},
+   {s:'Les étagères des téléviseurs étaient à moitié vides.',a:true},
+   {s:"La livraison attendue la veille n'était pas arrivée.",a:true},
+   {s:'Karim est le responsable de tout le magasin.',a:false},
+   {s:'La camionnette de livraison est tombée en panne.',a:true},
+   {s:'Sophie a refusé de proposer une solution aux clients.',a:false},
+   {s:"Une deuxième livraison est arrivée avant l'ouverture.",a:true},
+   {s:'Beaucoup de clients se sont plaints du choix réduit.',a:false}
+  ]},
+ {title:'The Overbooked Delivery',
+  text:`At 7 a.m., three delivery lorries arrived at the same time in the small loading bay behind the store. The stockroom, already full from the previous week's deliveries, had no space left for the new boxes of Black Friday merchandise.
+
+Thomas, the stockroom supervisor, quickly organised the lorries into a queue and asked two colleagues to help unload only the most urgent items first: the promotional products advertised in the store window. The rest of the boxes were left temporarily in the staff car park, covered with tarpaulins to protect them from the rain.
+
+By 8:30, the priority items were on the shop floor, ready for opening. Thomas informed the store manager that the remaining stock would be brought in gradually throughout the morning, once space became available.`,
+  vf:[
+   {s:'Trois camions sont arrivés en même temps.',a:true},
+   {s:'La réserve du magasin était complètement vide.',a:false},
+   {s:'Thomas est le responsable de la réserve.',a:true},
+   {s:'Les employés ont déchargé tous les cartons en même temps.',a:false},
+   {s:'Les produits de la vitrine ont été déchargés en priorité.',a:true},
+   {s:'Les cartons restants ont été jetés à la poubelle.',a:false},
+   {s:'Tous les produits prioritaires étaient en rayon avant 8h30.',a:true},
+   {s:"Thomas n'a rien dit au responsable du magasin.",a:false}
+  ]},
+ {title:'The Barcode Error',
+  text:`Just before opening, the till system began rejecting the barcodes of several promotional items. Each time a cashier scanned one of the discounted products, the register displayed the full price instead of the Black Friday discount.
+
+Nadia, the IT-trained assistant manager, realised that the pricing file uploaded overnight had not updated correctly for one product category. She contacted head office immediately, who confirmed they would fix the database within the hour.
+
+In the meantime, Nadia gave all cashiers a printed list of the correct discounted prices, so that they could manually apply the reduction until the system was repaired. The problem was solved by 10 a.m., and the store manager thanked the team for reacting so quickly to avoid frustrating customers.`,
+  vf:[
+   {s:'Le système de caisse acceptait bien tous les codes-barres.',a:false},
+   {s:'Les produits en promotion affichaient le plein tarif.',a:true},
+   {s:"Nadia est responsable de tout le service informatique.",a:false},
+   {s:'Le problème venait d\'un fichier de prix mal mis à jour.',a:true},
+   {s:'Le siège social a refusé de venir en aide à Nadia.',a:false},
+   {s:'Nadia a donné une liste des prix corrects aux caissiers.',a:true},
+   {s:"Le problème a été résolu avant l'ouverture du magasin.",a:false},
+   {s:"Le responsable du magasin a remercié l'équipe.",a:true}
+  ]}
+];
+
+/* Mission 5 — Delivery Dispute: 3 reading sets (text + True/False, français) */
+const M5SETS=[
+ {title:'The Late Parcel',
+  text:`A customer, Mrs. Dubois, called the store on Saturday morning, furious that her Black Friday online order had still not arrived, three days after the promised delivery date. She had ordered a laptop as a birthday gift and the birthday was the next day.
+
+Léo, the customer service assistant, checked the tracking number and discovered the parcel was stuck at a sorting centre due to the huge volume of Black Friday orders. He apologised sincerely and offered two solutions: a full refund of the delivery cost, or express next-day delivery at no extra charge.
+
+Mrs. Dubois chose the express delivery option. Léo arranged it immediately with the carrier and sent her a confirmation email with the new tracking number, promising to follow up personally the next morning.`,
+  vf:[
+   {s:'Mme Dubois a appelé le magasin un samedi matin.',a:true},
+   {s:"Le colis est arrivé à temps pour l'anniversaire.",a:false},
+   {s:'Léo travaille au service client.',a:true},
+   {s:'Le colis était bloqué dans un centre de tri.',a:true},
+   {s:'Léo a refusé de proposer une solution.',a:false},
+   {s:'Mme Dubois a choisi le remboursement des frais de livraison.',a:false},
+   {s:'Léo a envoyé un email de confirmation.',a:true},
+   {s:'Léo a promis de ne plus jamais recontacter la cliente.',a:false}
+  ]},
+ {title:'The Wrong Address',
+  text:`Mr. Bernard contacted the store's online chat to say that his Black Friday parcel had been delivered to the wrong address, according to the tracking information. He was worried because the order included an expensive smartphone.
+
+Camille, the customer service advisor, checked the order details and noticed a small mistake in the postcode, entered incorrectly during checkout. She contacted the delivery company, who confirmed the parcel had been left with a neighbour at the wrong address.
+
+Camille arranged for the carrier to collect the parcel from the neighbour and redeliver it to the correct address the next day, free of charge. She also informed Mr. Bernard that she would personally monitor the new delivery to make sure everything went smoothly this time.`,
+  vf:[
+   {s:'M. Bernard a contacté le magasin par téléphone.',a:false},
+   {s:'Le colis contenait un smartphone.',a:true},
+   {s:"L'erreur venait d'un mauvais code postal saisi.",a:true},
+   {s:'Le colis avait été perdu définitivement.',a:false},
+   {s:'Camille est vendeuse en boutique.',a:false},
+   {s:'La nouvelle livraison a été facturée au client.',a:false},
+   {s:'Camille a organisé la récupération du colis chez le voisin.',a:true},
+   {s:'Camille a proposé de suivre personnellement la nouvelle livraison.',a:true}
+  ]},
+ {title:'The Damaged Package',
+  text:`On Monday, a customer named Ms. Torres opened her Black Friday parcel to find that the coffee machine inside was cracked and unusable. She immediately sent photos of the damage through the store's website, along with her order number.
+
+Hugo, the after-sales assistant, reviewed the photos and confirmed the packaging had clearly been crushed during transport. Following store policy, he did not ask the customer to return the damaged item, since replacements for damaged goods under fifty pounds could be sent directly.
+
+Hugo arranged for a new coffee machine to be shipped the same day with priority delivery, and he sent Ms. Torres an apology email with a ten percent discount voucher for her next purchase, to thank her for her patience.`,
+  vf:[
+   {s:'Mme Torres a reçu une machine à café cassée.',a:true},
+   {s:'Elle a envoyé des photos par courrier postal.',a:false},
+   {s:'Hugo travaille au service après-vente.',a:true},
+   {s:'L\'emballage avait été écrasé pendant le transport.',a:true},
+   {s:"Hugo a demandé à la cliente de renvoyer l'article endommagé.",a:false},
+   {s:'Une nouvelle machine a été expédiée le jour même.',a:true},
+   {s:"Hugo n'a proposé aucun geste commercial.",a:false},
+   {s:'La cliente a reçu un email d\'excuses.',a:true}
+  ]}
+];
+
+/* Mission 3 — Customer Complaint: 3 oral situation cards (solo, one per attempt) */
+const SIT=[
+ {e:'😠',t:'Situation — The Angry Refund Request',w:'Customer Service Desk — Black Friday Afternoon',
+  who:"A customer is demanding an immediate cash refund for a TV that stopped working after one day, but she has lost her receipt and is speaking loudly, drawing attention from other shoppers.",
+  r:"You are the customer service assistant. Explain the store policy, propose a solution, and stay calm and professional.",
+  h:'💡 Mots-clés SEULEMENT (max 8) — ex. sorry / understand / receipt / order number / check / refund / solution / thank you'},
+ {e:'🏷️',t:'Situation — The Price Mismatch',w:'Checkout — Black Friday Morning',
+  who:'A customer insists that the shelf price was lower than the price charged at the till for a promotional item, and a queue is building up behind him.',
+  r:'You are the cashier. Apologise, check the situation, and propose a fair solution quickly.',
+  h:'💡 Mots-clés SEULEMENT (max 8) — ex. sorry / check / price / shelf / discount / apply / thank you for waiting'},
+ {e:'🔧',t:'Situation — The Faulty Product Exchange',w:'Returns Counter — Black Friday Evening',
+  who:'A customer wants to exchange a damaged blender for a different model, but the store no longer has that model in stock, and he becomes impatient.',
+  r:'You are the returns assistant. Explain the situation honestly and offer alternative solutions.',
+  h:'💡 Mots-clés SEULEMENT (max 8) — ex. sorry / out of stock / alternative / similar model / refund / voucher / understand'}
+];
+
+/* Mission 6 — Manager's Debrief: 3 oral incident reports (solo, one per attempt) */
+const REP=[
+ {e:'📦',t:'Incident Report — Stock Shortage',i:'Electronics Department — Black Friday, 7:00 a.m.',
+  x:'The store discovered that half the advertised television stock had not been delivered on time due to a broken-down delivery van. The stockroom manager was informed and temporary signs were placed to explain the delay. Customers were offered a rain check at the same discounted price. A smaller delivery arrived before opening and most of the missing stock was restocked quickly.',
+  h:'💡 Présentez : who / what happened / what was checked / solution given / result — mots-clés seulement.'},
+ {e:'🚚',t:'Incident Report — Delivery Dispute',i:'Customer Service — Black Friday, Saturday morning',
+  x:"A customer's online order was delayed at a sorting centre because of the high volume of Black Friday deliveries. The customer service assistant apologised, checked the tracking information, and offered express delivery at no extra cost. The customer accepted the solution and received a confirmation email with a new tracking number.",
+  h:'💡 Présentez : who / what happened / what was checked / solution given / result — mots-clés seulement.'},
+ {e:'☕',t:'Incident Report — Damaged Product',i:'After-Sales Service — Black Friday, Monday',
+  x:'A customer received a coffee machine that had been damaged during transport. The after-sales assistant reviewed photos of the damage and, following store policy, arranged for a replacement to be shipped the same day without requiring the item to be returned. The customer also received an apology email with a discount voucher.',
+  h:'💡 Présentez : who / what happened / what was checked / solution given / result — mots-clés seulement.'}
+];
+
+/* ═══════════════════════════ STATE & UTILS ═══════════════════════════ */
+let S={
+  scr:'home',tc:'0504',sc:'BF-CHAOS',
+  stu:{fn:'',ln:''},pts:0,
+  sh:[],rv:[],res:{},wr:[],
+  t0:null,t1:null,
+  att:{m1:1,m2:1,m3:1,m4:1,m5:1,m6:1},
+  sets1:[],sets4:[],
+  m7:{text:''}
+};
+let E={};let F={};
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const ftm=(s,e)=>{if(!s||!e)return'—';const d=Math.round((e-s)/1e3);return`${0|d/60}min ${d%60}s`;};
+
+/* ═══════════════════════════ LOCAL STORAGE — PROGRESS PERSISTENCE ═══════════════════════════ */
+const LS_PREFIX='bfchaos_';
+const CHECKPOINTS=['m1i','m1d','m2i','m2d','m3i','m3d','m4i','m4d','m5i','m5d','m6i','m6d','fin','vic','m7','rep'];
+function saveProgress(){
+  if(!S.stu||!S.stu.fn||!S.stu.ln)return;
+  const id=S.stu.fn+'-'+S.stu.ln;
+  try{
+    localStorage.setItem(LS_PREFIX+id,JSON.stringify({
+      stu:S.stu,pts:S.pts,sh:S.sh,rv:S.rv,res:S.res,wr:S.wr,t0:S.t0,t1:S.t1,
+      att:S.att,sets1:S.sets1,sets4:S.sets4,m7:S.m7,scr:S.scr,wordFor:S.wordFor,
+      savedAt:Date.now()
+    }));
+  }catch(e){}
+}
+function loadProgress(id){
+  try{const raw=localStorage.getItem(LS_PREFIX+id);return raw?JSON.parse(raw):null;}catch(e){return null;}
+}
+function listSaved(){
+  const out=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.indexOf(LS_PREFIX)===0){
+      try{const d=JSON.parse(localStorage.getItem(k));if(d&&d.stu)out.push({id:d.stu.fn+'-'+d.stu.ln,pts:d.pts,scr:d.scr,savedAt:d.savedAt});}catch(e){}
+    }
+  }
+  return out.sort((a,b)=>(b.savedAt||0)-(a.savedAt||0));
+}
+function clearProgress(id){try{localStorage.removeItem(LS_PREFIX+id);}catch(e){}}
+function resumeGame(id){
+  const d=loadProgress(id);
+  if(!d)return;
+  S.stu=d.stu;S.pts=d.pts;S.sh=d.sh;S.rv=d.rv;S.res=d.res;S.wr=d.wr;S.t0=d.t0;S.t1=d.t1;
+  S.att=d.att;S.sets1=d.sets1;S.sets4=d.sets4;S.m7=d.m7;S.wordFor=d.wordFor;
+  go(d.scr||'m1i');
+}
+const CKPT_LABEL={m1i:'Mission 1',m1d:'Mission 1',m2i:'Mission 2',m2d:'Mission 2',m3i:'Mission 3',m3d:'Mission 3',m4i:'Mission 4',m4d:'Mission 4',m5i:'Mission 5',m5d:'Mission 5',m6i:'Mission 6',m6d:'Mission 6',fin:'Code final',vic:'Victoire',m7:'Mission bonus',rep:'Rapport'};
+function starRating(n,t){const p=t?n/t:0;if(p>=.9)return{s:3,msg:'Excellent ! 🔥',c:'#B8860B'};if(p>=.8)return{s:2,msg:'Bien joué ! 👍',c:'#B8860B'};if(p>=.6)return{s:1,msg:'Peut mieux faire',c:'#D62839'};return{s:0,msg:'Courage, continuez ! 💪',c:'#B71C1C'};}
+function stars(n){return'<span class="stars">'+'★'.repeat(n)+'<span style="opacity:.25">'+'★'.repeat(3-n)+'</span></span>';}
+function wc(str){return (str.trim().match(/\S+/g)||[]).length;}
+
+/* Build a QCM set from a vocabulary pool subset (fresh distractors each time) */
+function buildQCMSet(items){
+  return items.map((item,idx)=>{
+    const others=items.filter((_,j)=>j!==idx);
+    const distractors=shuf(others).slice(0,3).map(x=>x.d);
+    const opts=shuf([item.d,...distractors]);
+    return{q:`What does "${item.w}" mean?`,o:opts,c:opts.indexOf(item.d)};
+  });
+}
+
+/* ═══════════════════════════ UI ATOMS ═══════════════════════════ */
+const btn=(t,fn,c='teal',extra='')=>`<button class="btn btn-${c} ${extra}" onclick="${fn}">${t}</button>`;
+function hdr(lvl){
+  const ls=[['📋','Vocab'],['🔍','Stock'],['😠','Client'],['📌','Fournisseur'],['🚚','Livraison'],['📊','Debrief']];
+  const dots=ls.map(([e,l],i)=>`${i>0?`<div class="prg-line" style="background:${i+1<=lvl?'var(--teal)':'#E0E0E0'}"></div>`:''}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div class="prg-dot ${i+1<lvl?'prg-done':i+1===lvl?'prg-active':'prg-future'}">${i+1<lvl?'✓':e}</div>
+      <div class="prg-lbl">${l}</div>
+    </div>`).join('');
+  return `<div class="hdr noprint"><div class="hdr-in"><div class="prg">${dots}</div></div></div>`;
+}
+function lvlIntro(e,t,sub,desc,fn,col='teal'){
+  return `<div class="card card-${col} fadein"><div style="text-align:center;margin-bottom:18px"><div style="font-size:2.8rem">${e}</div><h2 class="pop" style="color:var(--${col});font-size:1.65rem;margin-top:5px">${t}</h2><p style="color:var(--coral);font-weight:700;font-size:.85rem;margin-top:4px">${sub}</p></div><div style="background:#FBFAF7;border-radius:11px;padding:14px;margin-bottom:18px;font-size:.9rem;color:#444;line-height:1.7">${desc}</div><div style="text-align:center">${btn("Lancer la mission 🎯",fn,'teal','lg')}</div></div>`;
+}
+function retryBanner(att,score,total,ptsDelta,label){
+  const thresh=att===1?'80%':'70%';
+  return `<div class="ko fadein" style="margin-bottom:12px">💪 Tentative ${att} : ${score}/${total} (seuil requis ${thresh}) — ${ptsDelta} pts. Nouvelle tentative avec un ${label} différent !</div>`;
+}
+function indiceScreen(mission,onNext){
+  const w=S.wordFor[mission];
+  if(w&&!S.rv.includes(w))S.rv.push(w);
+  const filled=S.rv.map(x=>`<div style="background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);color:#fff;padding:7px 18px;border-radius:50px;font-family:'Poppins';font-weight:900;font-size:1.1rem;display:inline-block;margin:3px">${x}</div>`).join('');
+  return `<div class="ibx fadein" style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.7);margin-bottom:7px">Mot secret découvert</div><div class="iwd">${w}</div><div style="color:rgba(255,255,255,.7);font-size:.82rem;margin-top:9px">📝 Notez ce mot ! Les 6 forment une phrase.</div></div>
+  <div class="card"><div class="pop" style="color:var(--teal);margin-bottom:10px;font-size:1rem">🧩 Collection (${S.rv.length}/6)</div><div style="margin-bottom:10px">${filled}</div><p style="color:#AAA;font-size:.78rem">Les fragments sont dans le désordre !</p></div>
+  <div style="text-align:center;margin-top:10px">${btn('Mission suivante →',onNext,'coral','lg')}</div>`;
+}
+function profFab(){
+  if(S.scr==='home'||S.scr==='tlg'||S.scr==='tdb')return'';
+  return `<div class="prof-fab noprint">${btn('👔 Espace Prof',"go('tlg')",'gray','sm')}</div>`;
+}
+function scoreBadge(){
+  const hiddenScreens=['home','tlg','tdb'];
+  if(hiddenScreens.includes(S.scr))return'';
+  return `<div class="score-fab noprint">⭐ ${S.pts} pts</div>`;
+}
+function reportFab(){
+  const hiddenScreens=['home','tlg','tdb','rules','slg','id','rep'];
+  if(hiddenScreens.includes(S.scr)||!S.t0)return'';
+  return `<div class="rep-fab noprint">${btn('📥 PDF',"S._returnTo=S.scr;S._returnE=E;go('rep')",'gray','sm')}</div>`;
+}
+
+/* ═══════════════════════════ HOME ═══════════════════════════ */
+function vHome(){
+  return `<div style="min-height:100vh;display:flex;flex-direction:column">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:28px 18px">
+    <div style="text-align:center;max-width:520px">
+      <div style="font-size:1.8rem;margin-bottom:4px;animation:float 3s ease-in-out infinite">🛍️</div>
+      <h1 class="pop" style="font-size:2rem;color:var(--teal);margin-bottom:5px">Black Friday Chaos</h1>
+      <div style="background:linear-gradient(135deg,var(--teal),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800;font-size:1rem;margin-bottom:5px">English Escape Game</div>
+      <p style="color:#888;font-size:.88rem;margin-bottom:30px">Bac Pro 1ère Commerce — Mission vente en boutique</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <div class="card" style="flex:1;min-width:170px;max-width:215px;text-align:center;border-top:3px solid var(--teal)">
+          <div style="font-size:2.2rem;margin-bottom:8px">🎯</div>
+          <div class="pop" style="color:var(--teal);margin-bottom:4px">Élève</div>
+          <div style="color:#888;font-size:.82rem;margin-bottom:15px">Rejoindre la mission</div>
+          ${btn("C'est parti ! →","go('rules')",'teal','full')}
+        </div>
+        <div class="card" style="flex:1;min-width:170px;max-width:215px;text-align:center;border-top:3px solid var(--coral)">
+          <div style="font-size:2.2rem;margin-bottom:8px">👔</div>
+          <div class="pop" style="color:var(--coral);margin-bottom:4px">Professeur</div>
+          <div style="color:#888;font-size:.82rem;margin-bottom:15px">Gérer le jeu</div>
+          ${btn('Accès prof 🔑',"go('tlg')",'coral','full')}
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer style="text-align:center;padding:14px;color:#BBB;font-size:.78rem;border-top:1px solid #ECE3CE">
+    Créé par <strong style="color:var(--teal)">C. Iemfre</strong> &nbsp;|&nbsp;
+    <span style="color:var(--coral);cursor:pointer;font-weight:700" onclick="go('rgpd')">🔒 RGPD</span>
+  </footer></div>`;
+}
+
+/* ═══════════════════════════ RULES PAGE ═══════════════════════════ */
+function vRules(){
+  const missions=[
+    {n:1,e:'📋',t:'Store Floor',d:"QCM vocabulaire de la vente — prouvez que vous maîtrisez les bases du métier.",c:'var(--teal)'},
+    {n:2,e:'🔍',t:'Stock Room Crisis',d:'Compréhension écrite — un texte professionnel, exercice vrai/faux.',c:'var(--coral)'},
+    {n:3,e:'😠',t:'Customer Complaint',d:'Expression orale — gérez seul(e) une situation client en anglais.',c:'#7B1FA2'},
+    {n:4,e:'📌',t:'Supplier Call',d:'Correspondance — associez les termes fournisseur/logistique à leurs définitions.',c:'#E65100'},
+    {n:5,e:'🚚',t:'Delivery Dispute',d:'Compréhension écrite — un 2e texte professionnel, vrai/faux.',c:'var(--coral)'},
+    {n:6,e:'📊',t:"Manager's Debrief",d:"Compte rendu oral — présentez un rapport d'incident professionnel en anglais.",c:'#1B5E20'}
+  ];
+  return `<div style="min-height:100vh;padding-bottom:30px">
+  <div class="glass" style="background:linear-gradient(135deg,var(--teal),var(--coral));padding:28px 20px;text-align:center;color:#fff">
+    <div style="position:relative">
+      <div style="font-size:2.5rem;margin-bottom:6px">📋</div>
+      <h1 class="pop" style="font-size:1.9rem;margin-bottom:5px">Mission Briefing</h1>
+      <div style="font-size:.9rem;opacity:.85">Black Friday Chaos • English Escape Game</div>
+    </div>
+  </div>
+  <div class="page">
+    <div class="card" style="border-left:4px solid var(--amber);margin-top:4px">
+      <div class="pop" style="color:var(--amber);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🚨 Contexte de mission</div>
+      <p style="color:#444;font-size:.9rem;line-height:1.75">Vendredi noir. Le magasin ouvre dans deux heures, et la file d'attente s'allonge déjà dehors. Vous venez d'être recruté(e) comme stagiaire vendeur/conseiller de clientèle. Ruptures de stock, clients mécontents, litiges de livraison... Complétez les <strong>6 missions</strong> pour trouver les <strong>6 mots secrets</strong>. Recomposez la phrase pour entrer le Master Code et sauver ce Black Friday.</p>
+    </div>
+    <div class="pop" style="color:var(--teal);margin:18px 0 10px;font-size:1rem">🗺️ Les 6 missions</div>
+    <div style="display:grid;gap:9px;margin-bottom:18px">
+      ${missions.map(m=>`<div class="card" style="display:flex;align-items:flex-start;gap:13px;padding:14px 18px;border-left:4px solid ${m.c}">
+        <div style="width:38px;height:38px;border-radius:50%;background:${m.c};color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${m.e}</div>
+        <div><div style="font-weight:800;font-size:.92rem;color:#333">Mission ${m.n} — ${m.t}</div><div style="color:#888;font-size:.82rem;margin-top:3px;line-height:1.5">${m.d}</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="card" style="border-top:3px solid var(--amber)">
+      <div class="pop" style="color:var(--amber);margin-bottom:12px">📐 Règles du jeu</div>
+      <div style="display:grid;gap:8px;font-size:.87rem">
+        ${[['⭐ Points','<strong>+50 pts</strong> si réussi dès la 1ère tentative (≥80%).'],
+           ['🔁 3 tentatives','Score insuffisant ? Vous retentez avec un <strong>nouveau vocabulaire / une nouvelle situation</strong>. Aucune mission ne bloque la partie.'],
+           ['😠📊 Oral','Missions 3 & 6 : vous jouez seul(e), et le professeur vous donne une <strong>note sur 10</strong> que vous saisissez vous-même.'],
+           ['🧩 Code secret','6 fragments révélés dans le désordre. Recomposez la phrase pour gagner.'],
+           ['🔄 Reprise','Votre progression est enregistrée automatiquement sur ce poste. Vous pouvez fermer la page et reprendre plus tard avec le même identifiant.'],
+           ['✍️ Mission bonus','Un compte rendu final EN ANGLAIS à rédiger seul(e), une fois la mission accomplie.'],
+           ['📥 Rapport','PDF téléchargeable à tout moment via le bouton flottant, avec vos résultats et détails.']
+        ].map(([k,v])=>`<div style="display:flex;gap:10px;background:#FBFAF7;padding:10px 12px;border-radius:10px;align-items:flex-start"><span style="flex-shrink:0;font-size:1rem">${k.split(' ')[0]}</span><span><strong>${k.split(' ').slice(1).join(' ')} :</strong> <span style="color:#555">${v}</span></span></div>`).join('')}
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:18px">
+      ${btn('✅ Accepter la mission',"go('slg')",'teal','lg')}
+      <div style="margin-top:10px">${btn('← Retour',"go('home')",'gray','sm')}</div>
+    </div>
+  </div></div>`;
+}
+
+/* ═══════════════════════════ LOGIN ═══════════════════════════ */
+function vLogin(title,next){
+  const isT=next==='tdb';
+  return `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card fadein" style="max-width:380px;width:100%;border-top:4px solid ${isT?'var(--coral)':'var(--teal)'}">
+    <div style="color:#AAA;cursor:pointer;font-size:.83rem;margin-bottom:14px" onclick="go('home')">← Accueil</div>
+    <div style="text-align:center;margin-bottom:20px"><div style="font-size:2.5rem">${isT?'👔':'🎯'}</div>
+      <h2 class="pop" style="color:${isT?'var(--coral)':'var(--teal)'};font-size:1.55rem;margin-top:6px">${title}</h2>
+    </div>
+    <input id="lgc" type="password" placeholder="Entrez le code d'accès" style="margin-bottom:9px" onkeydown="if(event.key==='Enter')doLogin('${next}')">
+    <div id="lge" style="color:var(--red);font-weight:700;font-size:.83rem;min-height:17px;margin-bottom:8px"></div>
+    ${btn('Accéder →',`doLogin('${next}')`,'teal','full')}
+  </div></div>`;
+}
+function doLogin(next){
+  const v=(document.getElementById('lgc')||{}).value||'';
+  if(v.toUpperCase()===(next==='tdb'?S.tc:S.sc.toUpperCase()))go(next);
+  else{const e=document.getElementById('lge');if(e)e.textContent='Code incorrect. Réessayez.';}
+}
+
+/* ═══════════════════════════ TEACHER ═══════════════════════════ */
+function vTeacher(){
+  return `<div style="min-height:100vh;padding:20px"><div style="max-width:700px;margin:0 auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-top:6px">
+    <h2 class="pop" style="color:var(--coral);font-size:1.55rem">👔 Interface Professeur</h2>
+    ${btn('← Accueil',"go('home')",'gray','sm')}
+  </div>
+  <div class="card card-coral"><div class="pop" style="color:var(--coral);margin-bottom:11px">🔑 Code d'accès élèves</div>
+    <p style="color:#888;font-size:.87rem;margin-bottom:5px">Code fixé pour ce jeu : <strong style="color:var(--coral);font-family:monospace;font-size:1.15rem">${S.sc}</strong></p>
+    <p style="color:#AAA;font-size:.78rem">Communiquez ce code aux élèves avant de lancer le jeu. Votre code professeur (0504) reste le même pour tous les jeux.</p>
+  </div>
+  <div class="card card-teal"><div class="pop" style="color:var(--teal);margin-bottom:12px">📋 Récapitulatif du jeu</div>
+    ${[['Master Code final','THIS STORE SURVIVED BLACK FRIDAY CHAOS (fragments révélés dans le désordre)'],
+       ['Système de points (écrit)','+50 pts tentative 1 réussie (≥80%) • +30 pts tentative 2 (≥70%) • tentative 3 toujours validée, points proportionnels'],
+       ['Pénalités','−10 pts si tentative 1 échouée • −15 pts si tentative 2 échouée'],
+       ['Non-blocage',"Aucune mission ne bloque la partie : après 3 tentatives, l'élève avance quoi qu'il arrive"],
+       ['Missions orales (3 & 6)',"Chaque élève joue seul. Vous annoncez une note orale sur 10 ; l'élève la saisit directement dans son interface. ≥9/10 = réussi ; sinon nouvelle tentative (≥8/10 en tentative 2)"],
+       ['Mission bonus','Compte rendu final EN ANGLAIS (80 mots min.), rédigé individuellement dans l\'application']
+    ].map(([k,v])=>`<div style="background:#FBF7EA;padding:10px 13px;border-radius:10px;margin-bottom:8px;font-size:.86rem"><strong style="color:var(--teal)">${k} :</strong> <span style="color:#555">${v}</span></div>`).join('')}
+  </div>
+  <div class="card card-coral"><div class="pop" style="color:var(--coral);margin-bottom:12px">🎓 Critères d'évaluation orale</div>
+    ${[['Mission 3 — Customer Complaint','Accueil professionnel, identification du problème, solution proposée, mots-clés adaptés (pas de phrases apprises).'],
+       ["Mission 6 — Manager's Debrief",'Structure who/what/when/action/result, vocabulaire professionnel, mots-clés seulement.']
+    ].map(([k,v])=>`<div style="background:var(--cl);padding:11px 13px;border-radius:10px;border:1px solid var(--coral2);margin-bottom:8px;font-size:.86rem"><strong style="color:var(--coral)">${k} :</strong> <span style="color:#555">${v}</span></div>`).join('')}
+  </div></div></div>`;
+}
+
+/* ═══════════════════════════ STUDENT IDENTIFICATION (solo, avec reprise) ═══════════════════════════ */
+function vId(){
+  const fn=F.fn||'',ln=F.ln||'';
+  const chip=fn&&ln?`<span class="chip">${fn}-${ln}</span>`:'<span style="color:#DDD;font-weight:800">--</span>';
+  const saved=listSaved();
+  const savedBlock=saved.length===0?'':`<div class="card" style="border-top:4px solid var(--coral);max-width:420px;width:100%;margin-bottom:14px">
+    <div class="pop" style="color:var(--coral);font-size:1.05rem;margin-bottom:10px;text-align:center">🔄 Reprendre ma partie</div>
+    <p style="color:#888;font-size:.78rem;text-align:center;margin-bottom:12px">Une progression est enregistrée sur ce poste pour :</p>
+    ${saved.map(s=>`<div style="display:flex;align-items:center;gap:8px;background:#FBFAF7;border-radius:11px;padding:9px 12px;margin-bottom:7px">
+      <span class="chip" style="margin:0">${s.id}</span>
+      <span style="flex:1;color:#888;font-size:.78rem">${s.pts} pts • ${CKPT_LABEL[s.scr]||s.scr}</span>
+      ${btn('▶ Reprendre',`resumeGame('${s.id}')`,'coral','sm')}
+      ${btn('🗑️',`confirmReset('${s.id}')`,'gray','sm')}
+    </div>`).join('')}
+  </div>`;
+  return `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+  ${savedBlock}
+  <div class="card fadein" style="max-width:420px;width:100%;border-top:4px solid var(--teal)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.5rem">🛍️</div>
+      <h2 class="pop" style="color:var(--teal);font-size:1.6rem;margin-top:6px">${saved.length?'Nouvelle partie':'Identification'}</h2>
+      <p style="color:#888;font-size:.83rem;margin-top:3px">Entrez votre identifiant avant de commencer</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px;background:#F5F5F5;padding:7px 10px;border-radius:9px">
+      ${['2 lettres prénom','2 lettres nom','ID'].map(h=>`<div style="font-size:.68rem;font-weight:800;color:#AAA;text-align:center">${h}</div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:16px;align-items:center">
+      <input id="fn0" type="text" placeholder="JO" value="${fn}" oninput="F.fn=this.value.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,2);rIdChip()" style="text-align:center;font-weight:800;font-family:monospace;letter-spacing:.12em">
+      <input id="ln0" type="text" placeholder="SM" value="${ln}" oninput="F.ln=this.value.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,2);rIdChip()" style="text-align:center;font-weight:800;font-family:monospace;letter-spacing:.12em">
+      <div id="idchip" style="text-align:center">${chip}</div>
+    </div>
+    <div id="ie" style="color:var(--red);font-weight:700;font-size:.83rem;min-height:17px;margin-bottom:10px"></div>
+    ${btn('🚀 Lancer la mission !','startGame()','teal','full lg')}
+  </div></div>`;
+}
+function confirmReset(id){
+  if(window.confirm(`Effacer définitivement la progression de ${id} sur ce poste ?`)){
+    clearProgress(id);render();
+  }
+}
+function rIdChip(){const e=document.getElementById('idchip');if(!e)return;const fn=(F.fn||'').slice(0,2),ln=(F.ln||'').slice(0,2);e.innerHTML=fn&&ln?`<span class="chip">${fn}-${ln}</span>`:'<span style="color:#DDD;font-weight:800">--</span>';}
+function startGame(){
+  const fn=(F.fn||'').toUpperCase().slice(0,2);
+  const ln=(F.ln||'').toUpperCase().slice(0,2);
+  if(!fn||!ln){const e=document.getElementById('ie');if(e)e.textContent='Remplissez les deux champs';return;}
+  const id=fn+'-'+ln;
+  if(loadProgress(id)&&!window.confirm(`Une progression existe déjà pour ${id}. L'écraser et repartir de zéro ?`))return;
+  clearProgress(id);
+  S.sh=shuf(WW);S.wordFor={m1:S.sh[0],m2:S.sh[1],m3:S.sh[2],m4:S.sh[3],m5:S.sh[4],m6:S.sh[5]};S.rv=[];S.res={};S.wr=[];S.pts=0;
+  S.stu={fn,ln};S.t0=Date.now();S.t1=null;
+  S.att={m1:1,m2:1,m3:1,m4:1,m5:1,m6:1};
+  {const shp=shuf(POOL1);S.sets1=[shp.slice(0,10),shp.slice(10,20),shp.slice(20,30)];}
+  {const shp4=shuf(POOL4);S.sets4=[shp4.slice(0,10),shp4.slice(10,20),shp4.slice(20,30)];}
+  S.m7={text:''};
+  F={};
+  go('m1i');
+}
+
+/* ═══════════════════════════ WRITTEN EXERCISES (QCM / VF / MATCH) ═══════════════════════════ */
+function startWritten(mission,kind){
+  S.att[mission]=1;
+  goWrittenAttempt(mission,kind,0);
+}
+function goWrittenAttempt(mission,kind,attIdx,banner){
+  if(kind==='qcm'){
+    const qs=buildQCMSet(S.sets1[attIdx]);
+    go('wex',{mission,kind,qs,cur:0,ans:{},done:false,_banner:banner});
+  }else if(kind==='vf'){
+    const src=mission==='m2'?M2SETS:M5SETS;
+    const set=src[attIdx];
+    go('wex',{mission,kind,qs:set.vf,text:set.text,title:set.title,cur:0,ans:{},done:false,_banner:banner});
+  }else if(kind==='match'){
+    const ps=S.sets4[attIdx];
+    go('wex',{mission,kind,ps,sh:shuf(ps.map((_,i)=>i)),sel:null,mt:{},done:false,_banner:banner});
+  }
+}
+function resolveWritten(mission,kind,score,total,wrongItems){
+  const att=S.att[mission];
+  let passed,ptsDelta;
+  if(att===1){passed=score>=Math.ceil(total*0.8);ptsDelta=passed?50:-10;}
+  else if(att===2){passed=score>=Math.ceil(total*0.7);ptsDelta=passed?30:-15;}
+  else{passed=score>=Math.ceil(total*0.5);ptsDelta=Math.round(score/total*20);}
+  S.pts=S.pts+ptsDelta;
+  S.res[mission+'-t'+att]={score,total,success:passed,pts:ptsDelta};
+  if(!passed)S.wr.push(...wrongItems);
+  if(passed||att===3){
+    goMissionDone(mission);
+  }else{
+    S.att[mission]=att+1;
+    goWrittenAttempt(mission,kind,att);
+  }
+}
+function goMissionDone(mission){
+  if(mission==='m1')go('m1d');
+  else if(mission==='m2')go('m2d');
+  else if(mission==='m4')go('m4d');
+  else if(mission==='m5')go('m5d');
+}
+
+/* ── QCM renderer ── */
+function vQCM(){
+  const{qs,cur=0,ans={},done=false}=E;
+  if(!qs)return'';
+  const q=qs[cur];const L='ABCD';const CC=['var(--teal)','var(--coral)','var(--amber)','#7B1FA2'];
+  const dots=qs.map((_,i)=>{const c=done?(ans[i]===qs[i].c?'var(--green)':'var(--red)'):(ans[i]!=null?'var(--teal)':'#DDD');return`<div onclick="E.cur=${i};render()" style="width:9px;height:9px;border-radius:50%;background:${c};cursor:pointer;display:inline-block;margin:2px"></div>`;}).join('');
+  const opts=q.o.map((opt,oi)=>{
+    let bc='#E8E8E8',bg='#fff';
+    if(ans[cur]===oi){bc='var(--teal)';bg='#FCF6E5';}
+    if(done&&oi===q.c){bc='var(--green)';bg='#EDF7EE';}
+    if(done&&ans[cur]===oi&&oi!==q.c){bc='var(--red)';bg='#FFEBEE';}
+    const lbg=ans[cur]===oi?CC[oi]:'#F0F0F0',lc=ans[cur]===oi?'#fff':'#999';
+    const mk=done?(oi===q.c?' ✓':(ans[cur]===oi?' ✗':'')):'';
+    return`<div class="opt ${ans[cur]===oi?'sel':''} ${done&&oi===q.c?'right':''} ${done&&ans[cur]===oi&&oi!==q.c?'wrong':''}" onclick="${done?'':(`E.ans[${cur}]=${oi};render()`)}" style="border-color:${bc};background:${bg}">
+      <div class="let" style="background:${lbg};color:${lc}">${L[oi]}</div>
+      <span style="flex:1">${opt}</span><span style="font-weight:800;color:${done&&oi===q.c?'var(--green)':'var(--red)'}">${mk}</span>
+    </div>`;
+  }).join('');
+  const allA=Object.keys(ans).length===qs.length;
+  const score=qs.filter((_,i)=>ans[i]===qs[i].c).length;
+  const bot=done
+    ?`<div style="display:flex;gap:8px;width:100%;margin-top:4px"><div class="ok" style="flex:1;margin:0">${score}/${qs.length} bonnes réponses</div>${btn('Continuer →','wexDone()','coral')}</div>`
+    :(allA?btn('✅ Valider mes réponses','E.done=true;render()','teal'):`<small style="color:#CCC;font-size:.78rem">${Object.keys(ans).length}/${qs.length} répondues</small>`);
+  return`<div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+      <span style="color:#AAA;font-size:.8rem;font-weight:700">Question ${cur+1} / ${qs.length}</span><div>${dots}</div>
+    </div>
+    <div style="background:var(--tl);border-radius:11px;padding:13px;margin-bottom:12px;font-weight:600;font-size:.9rem;line-height:1.5;color:#333">${q.q}</div>
+    ${opts}
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:6px">
+        ${cur>0?btn('← Préc.',`E.cur=${cur-1};render()`,'gray','sm'):''}
+        ${cur<qs.length-1?btn('Suiv. →',`E.cur=${cur+1};render()`,'teal','sm'):''}
+      </div>${bot}
+    </div>
+  </div>`;
+}
+/* ── V/F renderer ── */
+function vVF(){
+  const{qs,text,title,ans={},done=false}=E;if(!qs)return'';
+  const score=qs.filter((q,i)=>ans[i]===q.a).length;
+  const rows=qs.map((q,i)=>{
+    const bg=done?(ans[i]===q.a?'#EDF7EE':'#FFEBEE'):'#fff';
+    const bc=done?(ans[i]===q.a?'var(--green)':'var(--red)'):'#E8E8E8';
+    return`<div class="vfr" style="background:${bg};border-color:${bc}">
+      <span style="width:21px;height:21px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0">${i+1}</span>
+      <span style="flex:1;font-weight:600;font-size:.86rem;line-height:1.4">${q.s}</span>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="tvf" onclick="${done?'':(`E.ans[${i}]=true;render()`)}" style="border-color:var(--green);color:${ans[i]===true?'#fff':'var(--green)'};background:${ans[i]===true?'var(--green)':'#fff'}">VRAI</button>
+        <button class="tvf" onclick="${done?'':(`E.ans[${i}]=false;render()`)}" style="border-color:var(--red);color:${ans[i]===false?'#fff':'var(--red)'};background:${ans[i]===false?'var(--red)':'#fff'}">FAUX</button>
+      </div>
+      ${done?`<span style="font-weight:800;color:${ans[i]===q.a?'var(--green)':'var(--red)'}">${ans[i]===q.a?'✓':'✗'}</span>`:''}
+    </div>`;
+  }).join('');
+  const allA=Object.keys(ans).length===qs.length;
+  const bot=done
+    ?`<div style="display:flex;gap:8px;width:100%"><div class="ok" style="flex:1;margin:0">${score}/${qs.length} bonnes réponses</div>${btn('Continuer →','wexDone()','coral')}</div>`
+    :btn('✅ Valider',`E.done=true;render()`,'teal','',!allA);
+  return`<div class="rtxt"><strong style="color:var(--teal2);font-size:.8rem">📄 ${title}</strong><br><br>${text.replace(/\n\n/g,'<br><br>')}</div>${rows}<div style="margin-top:12px;display:flex;justify-content:flex-end">${bot}</div>`;
+}
+/* ── Matching renderer ── */
+function vMatch(){
+  const{ps,sh,sel,mt={},done=false}=E;if(!ps)return'';
+  const used=Object.values(mt);
+  const words=ps.map((p,i)=>{
+    const isM=mt[i]!=null,ok=done&&mt[i]===i,ko=done&&isM&&mt[i]!==i;
+    return`<div class="mi${sel===i?' msel':''}${isM&&!done?' mu':''}${ok?' mok':''}${ko?' mko':''}" onclick="${done||isM?'':(`selW(${i})`)}">
+      <strong style="flex:1">${p.w}</strong>
+      ${isM&&!done?'<span style="color:var(--coral);font-size:.72rem">✓</span>':''}
+      ${ok?'<span style="color:var(--green)">✓</span>':''}${ko?'<span style="color:var(--red)">✗</span>':''}
+    </div>`;
+  }).join('');
+  const defs=sh.map(orig=>{
+    const isU=used.includes(orig);
+    const mKey=Object.keys(mt).find(k=>mt[k]===orig);
+    const ok=done&&mKey!=null&&Number(mKey)===orig;
+    const ko=done&&isU&&!ok;
+    return`<div class="mi${isU&&!done?' mu':''}${ok?' mok':''}${ko?' mko':''}" onclick="${isU?'':(`selD(${orig})`)}">${ps[orig].d}</div>`;
+  }).join('');
+  const allM=Object.keys(mt).length===ps.length;
+  const score=ps.filter((_,i)=>mt[i]===i).length;
+  const bot=done
+    ?`<div style="display:flex;gap:8px;width:100%"><div class="ok" style="flex:1;margin:0">${score}/${ps.length} bonnes réponses</div>${btn('Continuer →','wexDone()','coral')}</div>`
+    :(allM?btn('✅ Valider','E.done=true;render()','teal'):`<small style="color:#CCC;font-size:.78rem">${Object.keys(mt).length}/${ps.length} associés</small>`);
+  return`<div class="hint" style="margin-bottom:12px">⚠️ Aucun retour en arrière possible : lisez bien avant de valider chaque association !</div><p style="color:#AAA;font-size:.8rem;margin-bottom:10px;font-weight:700">① Cliquez un terme → ② Cliquez sa définition</p>
+  <div class="mg"><div><div style="font-weight:800;color:var(--coral);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Termes</div>${words}</div>
+  <div><div style="font-weight:800;color:var(--amber);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Définitions</div>${defs}</div></div>
+  <div style="margin-top:13px;display:flex;justify-content:flex-end">${bot}</div>`;
+}
+function selW(i){if(E.done||E.mt[i]!=null)return;E.sel=E.sel===i?null:i;render();}
+function selD(orig){if(E.done||Object.values(E.mt||{}).includes(orig)||E.sel==null)return;if(!E.mt)E.mt={};E.mt[E.sel]=orig;E.sel=null;render();}
+
+function wexDone(){
+  const{mission,kind,qs,ps,ans={},mt={}}=E;
+  if(kind==='qcm'){
+    const score=qs.filter((_,i)=>ans[i]===qs[i].c).length;
+    const wrong=qs.flatMap((q,i)=>ans[i]!==q.c?[{level:'M1',question:q.q,given:ans[i]!=null?q.o[ans[i]]:'—',correct:q.o[q.c]}]:[]);
+    resolveWritten(mission,kind,score,qs.length,wrong);
+  }else if(kind==='vf'){
+    const score=qs.filter((q,i)=>ans[i]===q.a).length;
+    const wrong=qs.flatMap((q,i)=>ans[i]!==q.a?[{level:mission==='m2'?'M2':'M5',question:q.s,given:ans[i]?'VRAI':'FAUX',correct:q.a?'VRAI':'FAUX'}]:[]);
+    resolveWritten(mission,kind,score,qs.length,wrong);
+  }else if(kind==='match'){
+    const score=ps.filter((_,i)=>mt[i]===i).length;
+    const wrong=ps.flatMap((p,i)=>mt[i]!==i?[{level:'M4',question:`Match: ${p.w}`,given:mt[i]!=null?ps[mt[i]]?.d:'—',correct:p.d}]:[]);
+    resolveWritten(mission,kind,score,ps.length,wrong);
+  }
+}
+
+/* ═══════════════════════════ ORAL MISSIONS (solo) ═══════════════════════════ */
+function startOral(mission){
+  S.att[mission]=1;
+  goOralAttempt(mission,0);
+}
+function goOralAttempt(mission,attIdx,banner){
+  const content=mission==='m3'?SIT[attIdx]:REP[attIdx];
+  go('oex',{mission,attIdx,content,isRep:mission==='m6',step:'card',_banner:banner});
+}
+function resolveOral(mission,grade){
+  const att=S.att[mission];
+  let passed,ptsDelta;
+  if(att===1){passed=grade>=9;ptsDelta=passed?50:-10;}
+  else if(att===2){passed=grade>=8;ptsDelta=passed?30:-15;}
+  else{passed=grade>=8;ptsDelta=grade*2;}
+  S.pts=S.pts+ptsDelta;
+  S.res[mission+'-t'+att]={grade,success:passed,pts:ptsDelta};
+  if(passed||att===3){
+    if(mission==='m3')go('m3d');else go('m6d');
+  }else{
+    S.att[mission]=att+1;
+    goOralAttempt(mission,att);
+  }
+}
+function vOral(){
+  const{content,isRep,step,mission}=E;
+  const id=`${S.stu.fn}-${S.stu.ln}`;
+  let body='';
+  if(step==='card'){
+    const inner=isRep
+      ?`<div class="sit"><div class="slbl">📋 Incident Report</div><div style="font-weight:800;color:#333;margin-bottom:3px">${content.t}</div><div style="color:#888;font-size:.8rem;margin-bottom:10px">${content.i}</div><div style="font-size:.87rem;line-height:1.78;color:#333">${content.x}</div></div>`
+      :`<div class="sit"><div class="slbl">📍 Lieu</div><div class="sval">${content.w}</div><div class="slbl">👤 Contexte</div><div class="sval">${content.who}</div><div class="slbl">🎭 Votre rôle</div><div class="sval">${content.r}</div></div>`;
+    body=`<div class="ok" style="margin-bottom:14px">🎯 C'est à vous, <strong>${id}</strong> !</div>
+    ${inner}<div class="hint" style="margin-top:12px;margin-bottom:16px">${content.h}</div>
+    <div style="text-align:center"><p style="color:#888;font-size:.86rem;margin-bottom:10px">Lisez attentivement, préparez SEULEMENT des mots-clés (max 8), puis présentez.</p>${btn('🎤 Je suis prêt(e)',"E.step='presenting';render()",'teal','lg')}</div>`;
+  } else if(step==='presenting'){
+    body=`<div style="background:linear-gradient(135deg,var(--tl),var(--cl));border:2px solid var(--teal);border-radius:14px;padding:20px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:8px">🎤</div>
+      <p style="font-weight:700;color:var(--teal);margin-bottom:14px;font-size:.95rem">${id} présente son oral en anglais…</p>
+      <p style="color:#888;font-size:.82rem;margin-bottom:16px">Une fois la présentation terminée, le professeur annonce une note à l'oral. Saisissez-la ci-dessous.</p>
+      ${btn('✍️ Saisir la note',"E.step='grade';render()",'coral','lg')}
+    </div>`;
+  } else if(step==='grade'){
+    body=`<div style="background:var(--cl);border:2px solid var(--coral);border-radius:14px;padding:22px;text-align:center">
+      <div style="font-size:2.2rem;margin-bottom:8px">🏆</div>
+      <h3 class="pop" style="color:var(--coral);margin-bottom:5px">Note orale</h3>
+      <p style="color:#555;font-size:.88rem;margin-bottom:16px">Saisissez la note sur 10 annoncée par le professeur pour ${id}</p>
+      <input id="gval" type="number" min="0" max="10" placeholder="Note / 10" style="text-align:center;font-size:1.2rem;font-weight:800;margin-bottom:10px">
+      <div id="gerr" style="color:var(--red);font-weight:700;font-size:.82rem;min-height:16px;margin-bottom:8px"></div>
+      ${btn('✅ Valider la note','submitGrade()','coral','full lg')}
+    </div>`;
+  }
+  return`<div class="card fadein">${E._banner||''}<div style="text-align:center;margin-bottom:16px">
+    <div style="font-size:2rem">${content.e}</div>
+    <h3 class="pop" style="color:var(--coral);font-size:1.25rem;margin-top:4px">${content.t}</h3>
+  </div>${body}</div>`;
+}
+function submitGrade(){
+  const raw=(document.getElementById('gval')||{}).value;
+  const g=Number(raw);
+  if(raw===''||isNaN(g)||g<0||g>10){const e=document.getElementById('gerr');if(e)e.textContent='Entrez une note entre 0 et 10';return;}
+  resolveOral(E.mission,g);
+}
+
+/* ═══════════════════════════ FINAL CODE ═══════════════════════════ */
+function vFinal(){
+  const chips=S.rv.map(w=>`<div style="background:linear-gradient(135deg,var(--teal),var(--coral));color:#fff;padding:7px 18px;border-radius:50px;font-family:'Poppins';font-weight:900;font-size:1.05rem;display:inline-block;margin:3px">${w}</div>`).join('');
+  return`<div class="card fadein" style="border-top:4px solid var(--teal)">
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:3rem">🔐</div>
+      <h2 class="pop" style="color:var(--teal);font-size:1.75rem;margin-top:7px">Master Code</h2>
+      <p style="color:#888;font-size:.88rem;margin-top:4px">Recomposez la phrase secrète avec vos 6 fragments</p>
+    </div>
+    <div style="background:linear-gradient(135deg,var(--tl),var(--cl));border-radius:14px;padding:18px;margin-bottom:20px">
+      <div class="pop" style="color:var(--teal);margin-bottom:10px;font-size:.9rem">🧩 Vos fragments :</div>
+      <div style="margin-bottom:8px">${chips}</div>
+      <p style="color:#AAA;font-size:.78rem">⚠️ Ils sont dans le désordre — trouvez la bonne phrase !</p>
+    </div>
+    <label style="font-weight:700;display:block;margin-bottom:7px;font-size:.88rem;color:#444">✍️ Entrez la phrase complète :</label>
+    <input id="fc" type="text" placeholder="_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" style="font-size:1rem;text-align:center;letter-spacing:.04em;margin-bottom:9px" onkeydown="if(event.key==='Enter')checkFinal()">
+    <div id="fe" style="color:var(--red);font-weight:700;font-size:.83rem;min-height:17px;margin-bottom:10px"></div>
+    <div style="text-align:center">${btn('🔓 Sauver le magasin !','checkFinal()','teal','lg')}</div>
+  </div>`;
+}
+function checkFinal(){
+  const v=((document.getElementById('fc')||{}).value||'').trim().toUpperCase().replace(/\s+/g,' ');
+  if(v==='THIS STORE SURVIVED BLACK FRIDAY CHAOS'){S.t1=Date.now();go('vic');}
+  else{const e=document.getElementById('fe');if(e)e.textContent=`❌ Code incorrect. Réarrangez vos ${S.rv.length} fragments !`;}
+}
+
+/* ═══════════════════════════ VICTORY ═══════════════════════════ */
+function vVictory(){
+  const dur=ftm(S.t0,S.t1);
+  const r=starRating(S.pts,420);
+  const id=`${S.stu.fn}-${S.stu.ln}`;
+  return`<div class="glass" style="background:linear-gradient(135deg,var(--teal),var(--coral));border-radius:20px;padding:32px;text-align:center;color:#fff;margin-bottom:18px">
+    <div style="font-size:3rem;margin-bottom:8px">🎉🛍️🎊</div>
+    <h1 class="pop" style="font-size:2rem;margin-bottom:7px">Mission accomplie !</h1>
+    <p style="opacity:.9;margin-bottom:4px">Le magasin a survécu au Black Friday ! 🛍️</p>
+    <div style="font-family:'Poppins';font-size:1.1rem;margin-top:14px;background:rgba(255,255,255,.18);padding:10px 22px;border-radius:50px;display:inline-block">
+      THIS STORE SURVIVED BLACK FRIDAY CHAOS ✓
+    </div>
+  </div>
+  <div class="card"><div class="pop" style="color:var(--teal);margin-bottom:14px">📊 Résumé de mission</div>
+    <div style="text-align:center;margin-bottom:14px">${stars(r.s)} <span style="font-weight:700;color:var(--coral);margin-left:6px">${r.msg}</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--tl);padding:14px;border-radius:13px;text-align:center"><div class="pop" style="font-size:2rem;color:var(--teal)">${S.pts}</div><div style="color:#888;font-size:.8rem">Points</div></div>
+      <div style="background:var(--cl);padding:14px;border-radius:13px;text-align:center"><div class="pop" style="font-size:1.5rem;color:var(--coral)">${dur}</div><div style="color:#888;font-size:.8rem">Durée</div></div>
+    </div>
+    <div style="margin-bottom:16px"><div style="font-weight:700;font-size:.88rem;margin-bottom:6px">👤 Identifiant : <span style="color:var(--teal)">${id}</span></div></div>
+    ${btn('✍️ Mission bonus — Compte rendu final',"go('m7')",'coral','full lg')}
+  </div>`;
+}
+
+/* ═══════════════════════════ MISSION BONUS — FINAL REPORT ═══════════════════════════ */
+function vM7(){
+  const n=wc(S.m7.text||'');
+  const ok=n>=80;
+  return`<div class="card fadein" style="border-top:4px solid var(--coral)">
+    <div style="text-align:center;margin-bottom:16px"><div style="font-size:2.6rem">✍️</div>
+      <h2 class="pop" style="color:var(--coral);font-size:1.5rem;margin-top:6px">Mission bonus — Compte rendu final</h2>
+    </div>
+    <p style="color:#555;font-size:.88rem;line-height:1.7;margin-bottom:14px">Consigne : relatez les événements et incidents rencontrés pendant votre mission en magasin ce Black Friday. <strong>EN ANGLAIS — minimum 80 mots.</strong></p>
+    <textarea id="m7ta" rows="10" placeholder="Write your report here in ENGLISH (80 words minimum)..." oninput="onM7Input(this.value)">${S.m7.text||''}</textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <span id="m7cnt" style="font-weight:700;font-size:.85rem;color:${ok?'var(--green)':'var(--coral)'}">${n} / 80 mots minimum</span>
+      <span id="m7okbadge" class="ok" style="padding:5px 12px;font-size:.78rem;${ok?'':'display:none'}">✓ Longueur suffisante</span>
+    </div>
+    <div id="m7err" class="err" style="margin-top:10px;${ok?'display:none':''}">✍️ Il manque ${80-n} mot(s) pour atteindre le minimum requis.</div>
+    <div style="text-align:center;margin-top:16px"><button id="m7validate" class="btn btn-teal lg" ${ok?'':'disabled'} onclick="${ok?"go('rep')":''}">📥 Valider et voir le rapport</button></div>
+  </div>`;
+}
+function onM7Input(v){
+  S.m7.text=v;
+  const n=wc(v),ok=n>=80;
+  const cnt=document.getElementById('m7cnt');
+  if(cnt){cnt.textContent=`${n} / 80 mots minimum`;cnt.style.color=ok?'var(--green)':'var(--coral)';}
+  const badge=document.getElementById('m7okbadge');
+  if(badge)badge.style.display=ok?'inline-block':'none';
+  const err=document.getElementById('m7err');
+  if(err){err.style.display=ok?'none':'block';err.textContent=`✍️ Il manque ${80-n} mot(s) pour atteindre le minimum requis.`;}
+  const vb=document.getElementById('m7validate');
+  if(vb){if(ok){vb.removeAttribute('disabled');vb.setAttribute('onclick',"go('rep')");}else{vb.setAttribute('disabled','disabled');vb.removeAttribute('onclick');}}
+}
+
+/* ═══════════════════════════ REPORT ═══════════════════════════ */
+function vReport(){
+  const dur=ftm(S.t0,S.t1);
+  const LN={'m1-t1':'📋 Vocab — tentative 1','m1-t2':'📋 Vocab — tentative 2','m1-t3':'📋 Vocab — tentative 3',
+    'm2-t1':'🔍 Stock Room — tentative 1','m2-t2':'🔍 Stock Room — tentative 2','m2-t3':'🔍 Stock Room — tentative 3',
+    'm3-t1':'😠 Oral client — tentative 1','m3-t2':'😠 Oral client — tentative 2','m3-t3':'😠 Oral client — tentative 3',
+    'm4-t1':'📌 Vocab fournisseur — tentative 1','m4-t2':'📌 Vocab fournisseur — tentative 2','m4-t3':'📌 Vocab fournisseur — tentative 3',
+    'm5-t1':'🚚 Delivery Dispute — tentative 1','m5-t2':'🚚 Delivery Dispute — tentative 2','m5-t3':'🚚 Delivery Dispute — tentative 3',
+    'm6-t1':'📊 Debrief oral — tentative 1','m6-t2':'📊 Debrief oral — tentative 2','m6-t3':'📊 Debrief oral — tentative 3'};
+  const id=`${S.stu.fn}-${S.stu.ln}`;
+  const rows=Object.entries(S.res).map(([k,v])=>{
+    const scoreTxt=v.score!=null?`${v.score}/${v.total}`:(v.grade!=null?`${v.grade}/10`:'—');
+    return`<tr><td style="padding:9px;font-weight:700;font-size:.84rem">${LN[k]||k}</td><td style="padding:9px"><span style="background:${v.success?'var(--green)':'var(--red)'};color:#fff;padding:2px 9px;border-radius:50px;font-size:.73rem;font-weight:800">${v.success?'✓ Réussi':'✗ Non réussi'}</span></td><td style="padding:9px;color:#888;font-size:.84rem">${scoreTxt}</td><td style="padding:9px;color:${v.pts>=0?'var(--green)':'var(--red)'};font-size:.84rem;font-weight:700">${v.pts>=0?'+':''}${v.pts} pts</td></tr>`;
+  }).join('');
+  const errs=S.wr.length===0
+    ?`<div class="ok" style="text-align:center;margin-top:6px">🏆 Aucune erreur enregistrée !</div>`
+    :S.wr.map(w=>`<div style="background:#fff;border:1px solid #F2D9CD;border-radius:9px;padding:11px;margin-bottom:8px"><div style="font-weight:700;font-size:.84rem;color:#333">${w.question}</div><div style="color:var(--red);font-size:.8rem;margin-top:3px">✗ Réponse donnée : ${w.given||'—'}</div><div style="color:var(--green);font-size:.8rem">✓ Réponse correcte : ${w.correct}</div></div>`).join('');
+  const m7block=(S.m7.text&&wc(S.m7.text)>0)
+    ?`<div class="card"><div class="pop" style="color:var(--coral);margin-bottom:10px">✍️ Mission bonus — Compte rendu final (${wc(S.m7.text)} mots)</div><p style="white-space:pre-wrap;font-size:.87rem;line-height:1.7;color:#333">${(S.m7.text||'').replace(/</g,'&lt;')}</p></div>`
+    :'';
+  return`<div id="rep" style="max-width:780px;margin:0 auto;padding:20px;padding-bottom:40px">
+  <div class="noprint" style="margin-bottom:14px;display:flex;gap:9px;flex-wrap:wrap">
+    ${btn('← Retour',"go(S._returnTo||'vic',S._returnE||{})",'gray','sm')}
+    ${btn('🖨️ Enregistrer PDF','window.print()','teal','sm')}
+  </div>
+  <div class="glass" style="background:linear-gradient(135deg,var(--teal),var(--coral));border-radius:18px;padding:28px;text-align:center;color:#fff;margin-bottom:16px;print-color-adjust:exact;-webkit-print-color-adjust:exact">
+    <div class="pop" style="font-size:1.6rem;margin-bottom:4px">🛍️ Black Friday Chaos</div>
+    <div style="opacity:.85;font-size:.88rem">English Escape Game — Bac Pro 1ère Commerce</div>
+    <div style="opacity:.7;font-size:.78rem;margin-top:4px">${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div class="card" style="text-align:center;border-top:3px solid var(--teal)"><div style="font-weight:800;font-size:1rem;color:var(--teal)">${id}</div><div style="color:#888;font-size:.78rem;margin-top:3px">Identifiant</div></div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--coral)"><div class="pop" style="font-size:1.9rem;color:var(--teal)">${S.pts}</div><div style="color:#888;font-size:.78rem">Points • ${dur}</div><div style="margin-top:6px">${stars(starRating(S.pts,420).s)}</div></div>
+  </div>
+  <div class="card"><div class="pop" style="color:var(--teal);margin-bottom:12px">🎯 Résultats par mission</div>
+    <table style="width:100%;border-collapse:collapse"><tr style="background:var(--tl)"><th style="padding:9px;text-align:left;font-size:.8rem;font-weight:800">Mission</th><th style="padding:9px;text-align:left;font-size:.8rem;font-weight:800">Résultat</th><th style="padding:9px;text-align:left;font-size:.8rem;font-weight:800">Score</th><th style="padding:9px;text-align:left;font-size:.8rem;font-weight:800">Points</th></tr>${rows}</table>
+  </div>
+  ${m7block}
+  <div class="card"><div class="pop" style="color:var(--red);margin-bottom:12px">❌ Erreurs commises</div>${errs}</div>
+  <div style="background:linear-gradient(135deg,var(--teal),var(--coral));border-radius:14px;padding:14px 22px;text-align:center;font-family:'Poppins';font-weight:900;font-size:1.15rem;color:#fff;margin-bottom:14px">✅ THIS STORE SURVIVED BLACK FRIDAY CHAOS</div>
+  <div style="text-align:center;color:#BBB;font-size:.76rem">Créé par C. Iemfre • Black Friday Chaos — English Escape Game Bac Pro Commerce</div>
+  </div>`;
+}
+
+/* ═══════════════════════════ RGPD (texte exact) ═══════════════════════════ */
+function vRGPD(){
+  return`<div style="min-height:100vh;padding:20px 18px 40px">
+  <div style="max-width:580px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-top:8px">
+      <span style="color:#AAA;cursor:pointer;font-size:.83rem;font-weight:700" onclick="go('home')">← Retour</span>
+    </div>
+    <div class="glass" style="background:linear-gradient(135deg,var(--teal),var(--coral));border-radius:16px;padding:26px;text-align:center;color:#fff;margin-bottom:18px;print-color-adjust:exact;-webkit-print-color-adjust:exact">
+      <div style="font-size:2.4rem;margin-bottom:8px">🔒</div>
+      <h1 class="pop" style="font-size:1.5rem;margin-bottom:4px">Protection des données personnelles</h1>
+      <p style="opacity:.75;font-size:.82rem">Black Friday Chaos — English Escape Game</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--teal);margin-bottom:10px">
+      <p style="color:#333;font-size:.9rem;line-height:1.82">Cette application est un outil pédagogique développé pour un usage en classe.</p>
+    </div>
+    <div style="display:grid;gap:9px;margin-bottom:18px">
+      <div class="card" style="padding:15px 16px">
+        <p style="color:#333;font-size:.88rem;line-height:1.82">Aucune donnée n'est transmise à un serveur externe : toutes les informations (identifiant, réponses, score) restent uniquement dans la mémoire de votre navigateur, le temps de la partie en cours.</p>
+      </div>
+      <div class="card" style="padding:15px 16px">
+        <p style="color:#333;font-size:.88rem;line-height:1.82">Aucun cookie tiers, aucun traceur publicitaire, aucun appel à une API externe n'est utilisé.</p>
+      </div>
+      <div class="card" style="padding:15px 16px">
+        <p style="color:#333;font-size:.88rem;line-height:1.82">Les seules données saisies sont : les deux premières lettres de votre prénom et de votre nom (utilisées uniquement pour générer un identifiant au format XX-YY, sans jamais collecter votre identité complète), ainsi que vos réponses aux exercices.</p>
+      </div>
+      <div class="card" style="padding:15px 16px">
+        <p style="color:#333;font-size:.88rem;line-height:1.82">Ces données sauvegardées en stockage local uniquement (sur la tablette utilisée par l'élève uniquement).</p>
+      </div>
+      <div class="card" style="padding:15px 16px">
+        <p style="color:#333;font-size:.88rem;line-height:1.82">Le PDF généré est créé localement dans votre navigateur ; il n'est envoyé à personne automatiquement. C'est à vous de le transmettre à votre professeur.</p>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+/* ═══════════════════════════ ROUTER ═══════════════════════════ */
+function go(scr,ei={}){E=ei;S.scr=scr;if(CHECKPOINTS.includes(scr))saveProgress();render();window.scrollTo(0,0);}
+function render(){document.getElementById('app').innerHTML=view()+profFab()+scoreBadge()+reportFab();}
+function view(){
+  const sc=S.scr;
+  if(sc==='home')return vHome();
+  if(sc==='rules')return vRules();
+  if(sc==='rgpd')return vRGPD();
+  if(sc==='tlg')return vLogin('Interface Professeur','tdb');
+  if(sc==='tdb')return vTeacher();
+  if(sc==='slg')return vLogin('Connexion Élève','id');
+  if(sc==='id')return vId();
+
+  const W=hdr;
+  /* Mission 1 — Store Floor (QCM) */
+  if(sc==='m1i')return W(1)+`<div class="page">${lvlIntro('📋','Mission 1 — Store Floor','Vocabulaire de la vente','<p style="font-weight:700;margin-bottom:7px">Welcome to Black Friday!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Avant d\'accueillir les premiers clients, prouvez que vous maîtrisez le vocabulaire essentiel de la vente en boutique. 10 questions. Seuil de réussite : ≥ 8/10. 3 tentatives possibles, aucun blocage.</p>',"startWritten('m1','qcm')",'teal')}</div>`;
+  if(sc==='wex'&&E.mission==='m1')return W(1)+`<div class="page">${E._banner||''}<div class="card card-teal"><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><span style="background:var(--teal);color:#fff;padding:3px 12px;border-radius:50px;font-weight:800;font-size:.8rem">Tentative ${S.att.m1}</span><strong style="font-size:.95rem">QCM — Vocabulaire de la vente</strong></div>${vQCM()}</div></div>`;
+  if(sc==='m1d')return W(1)+`<div class="page">${indiceScreen('m1',"go('m2i')")}</div>`;
+
+  /* Mission 2 — Stock Room Crisis (VF) */
+  if(sc==='m2i')return W(2)+`<div class="page">${lvlIntro('🔍','Mission 2 — Stock Room Crisis','Compréhension écrite','<p style="font-weight:700;margin-bottom:7px">A stockroom problem has just come up!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Lisez le texte professionnel puis répondez aux 8 affirmations Vrai/Faux. Seuil : ≥ 80% à la 1ère tentative, ≥ 70% à la 2e. 3 tentatives possibles, aucun blocage.</p>',"startWritten('m2','vf')",'coral')}</div>`;
+  if(sc==='wex'&&E.mission==='m2')return W(2)+`<div class="page">${E._banner||''}<div class="card card-coral"><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><span style="background:var(--coral);color:#fff;padding:3px 12px;border-radius:50px;font-weight:800;font-size:.8rem">Tentative ${S.att.m2}</span><strong style="font-size:.95rem">Vrai / Faux</strong></div>${vVF()}</div></div>`;
+  if(sc==='m2d')return W(2)+`<div class="page">${indiceScreen('m2',"go('m3i')")}</div>`;
+
+  /* Mission 3 — Customer Complaint (Oral solo) */
+  if(sc==='m3i')return W(3)+`<div class="page">${lvlIntro('😠','Mission 3 — Customer Complaint','Expression orale','<p style="font-weight:700;margin-bottom:7px">A live situation at the customer service desk!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Vous lisez la carte de situation et gérez seul(e) l\'interaction en anglais. <strong>Mots-clés seulement, 8 maximum, aucune phrase apprise.</strong></p>',"startOral('m3')",'teal')}</div>`;
+  if(sc==='oex'&&E.mission==='m3')return W(3)+`<div class="page">${vOral()}</div>`;
+  if(sc==='m3d')return W(3)+`<div class="page">${indiceScreen('m3',"go('m4i')")}</div>`;
+
+  /* Mission 4 — Supplier Call (Matching) */
+  if(sc==='m4i')return W(4)+`<div class="page">${lvlIntro('📌','Mission 4 — Supplier Call','Correspondance commerciale','<p style="font-weight:700;margin-bottom:7px">The supplier files are scrambled!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Associez chaque terme de la relation fournisseur/logistique à sa définition exacte. Seuil : ≥ 8/10. 3 tentatives possibles, aucun blocage.</p><p style="color:var(--red);font-weight:700;font-size:.84rem;margin-top:8px">⚠️ Lisez bien tous les mots et toutes les définitions AVANT de commencer : une fois qu\'une association est validée, il est impossible de revenir en arrière ou de la corriger !</p>',"startWritten('m4','match')",'teal')}</div>`;
+  if(sc==='wex'&&E.mission==='m4')return W(4)+`<div class="page">${E._banner||''}<div class="card card-teal"><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><span style="background:#7B1FA2;color:#fff;padding:3px 12px;border-radius:50px;font-weight:800;font-size:.8rem">Tentative ${S.att.m4}</span><strong style="font-size:.95rem">Correspondance — Vocabulaire fournisseur</strong></div>${vMatch()}</div></div>`;
+  if(sc==='m4d')return W(4)+`<div class="page">${indiceScreen('m4',"go('m5i')")}</div>`;
+
+  /* Mission 5 — Delivery Dispute (VF) */
+  if(sc==='m5i')return W(5)+`<div class="page">${lvlIntro('🚚','Mission 5 — Delivery Dispute','Compréhension écrite','<p style="font-weight:700;margin-bottom:7px">A delivery complaint has just arrived!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Lisez le texte professionnel puis répondez aux 8 affirmations Vrai/Faux. Seuil : ≥ 80% à la 1ère tentative, ≥ 70% à la 2e. 3 tentatives possibles, aucun blocage.</p>',"startWritten('m5','vf')",'coral')}</div>`;
+  if(sc==='wex'&&E.mission==='m5')return W(5)+`<div class="page">${E._banner||''}<div class="card card-coral"><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><span style="background:var(--coral);color:#fff;padding:3px 12px;border-radius:50px;font-weight:800;font-size:.8rem">Tentative ${S.att.m5}</span><strong style="font-size:.95rem">Vrai / Faux</strong></div>${vVF()}</div></div>`;
+  if(sc==='m5d')return W(5)+`<div class="page">${indiceScreen('m5',"go('m6i')")}</div>`;
+
+  /* Mission 6 — Manager's Debrief (Oral solo report) */
+  if(sc==='m6i')return W(6)+`<div class="page">${lvlIntro('📊',"Mission 6 — Manager's Debrief",'Compte rendu oral','<p style="font-weight:700;margin-bottom:7px">Final mission — the manager needs your report!</p><p style="font-size:.88rem;color:#555;line-height:1.7">Lisez la fiche d\'incident et présentez seul(e) un compte rendu structuré en anglais. <strong>Mots-clés seulement.</strong></p>',"startOral('m6')",'coral')}</div>`;
+  if(sc==='oex'&&E.mission==='m6')return W(6)+`<div class="page">${vOral()}</div>`;
+  if(sc==='m6d')return W(6)+`<div class="page">${indiceScreen('m6',"go('fin')")}</div>`;
+
+  if(sc==='fin')return W(6)+`<div class="page">${vFinal()}</div>`;
+  if(sc==='vic')return W(6)+`<div class="page">${vVictory()}</div>`;
+  if(sc==='m7')return W(6)+`<div class="page">${vM7()}</div>`;
+  if(sc==='rep')return vReport();
+  return'<p>Écran inconnu</p>';
+}
+render();
+</script></body></html>
